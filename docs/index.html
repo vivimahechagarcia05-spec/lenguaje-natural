@@ -167,6 +167,7 @@
 <nav>
   <div class="brand">🛡 PromptShield<span> / UTP</span></div>
   <div class="links">
+    <a href="#demo">Demo</a>
     <a href="#problema">Problema</a>
     <a href="#pipeline">Pipeline</a>
     <a href="#ataques">Ataques</a>
@@ -181,7 +182,8 @@
   <h1>Ataque Automatizado de Prompt Injection<br>& Defensa con Machine Learning</h1>
   <p class="lead">Un sistema que demuestra cómo manipular un LLM mediante prompts adversariales y, al mismo tiempo, construye una capa defensiva basada en ML capaz de bloquear esos ataques antes de que lleguen al modelo.</p>
   <div class="cta">
-    <a class="btn primary" href="#resultados">Ver resultados</a>
+    <a class="btn primary" href="https://promptshield-utp.streamlit.app" target="_blank">🚀 Probar demo en vivo</a>
+    <a class="btn ghost" href="#resultados">Ver resultados</a>
     <a class="btn ghost" href="https://github.com/vivimahechagarcia05-spec/lenguaje-natural" target="_blank">Código en GitHub →</a>
   </div>
 </header>
@@ -193,6 +195,30 @@
     <div class="stat"><div class="num purple">7</div><div class="label">Categorías de ataque</div></div>
     <div class="stat"><div class="num ok">93.8%</div><div class="label">F1-score (mejor modelo)</div></div>
     <div class="stat"><div class="num ok">0.984</div><div class="label">AUC-ROC</div></div>
+  </div>
+</section>
+
+<!-- ── Demo en vivo ── -->
+<section id="demo">
+  <div class="kicker">Aplicación interactiva</div>
+  <h2 class="section-title">Pruébalo tú mismo</h2>
+  <p class="section-sub">Una app en Streamlit donde escribes prompts y ves la capa defensiva actuar en tiempo real: bloquea los ataques y deja pasar lo benigno al modelo LLaMA 3.3 70B.</p>
+  <div class="grid cols-3">
+    <div class="card">
+      <h3>💬 Chat defensivo</h3>
+      <p>Cada turno se normaliza y clasifica. Los ataques se bloquean antes de llegar al LLM; lo benigno obtiene respuesta real.</p>
+    </div>
+    <div class="card">
+      <h3>🧠 Memoria con filtro</h3>
+      <p>Conversación multi-turno, pero los prompts bloqueados nunca entran al historial: un ataque no puede envenenar el contexto.</p>
+    </div>
+    <div class="card">
+      <h3>📊 Panel en vivo</h3>
+      <p>Etiqueta, confianza y categoría estimada del ataque en cada mensaje, más un dashboard de métricas.</p>
+    </div>
+  </div>
+  <div style="text-align:center; margin-top:2rem;">
+    <a class="btn primary" href="https://promptshield-utp.streamlit.app" target="_blank">🚀 Abrir la demo en vivo</a>
   </div>
 </section>
 
