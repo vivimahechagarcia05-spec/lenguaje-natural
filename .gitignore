@@ -38,3 +38,6 @@ classifier_model.pkl
 
 # Claude Code local settings
 .claude/
+
+# Streamlit secrets (nunca subir la API key)
+.streamlit/secrets.toml
