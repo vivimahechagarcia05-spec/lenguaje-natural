@@ -72,9 +72,14 @@ Si se ejecuta cualquier fase que use Groq sin el archivo `.env`, el script lanza
 
 ### Sesión 2026-06-04
 - **Estado inicial:** Fases 1 y 2 completas. `attack_results.csv` con 139 registros. Fases 3-5 pendientes.
-- **Trabajo realizado:** Análisis completo del proyecto. Creación de `CLAUDE.md`, `AGENTE_CONTEXTO.md` y `ALGORITMO.md`.
-- **Identificado:** Dataset insuficiente (< 200 entradas), necesidad de ampliar `phase1_prompts.py`.
-- **Pendiente:** Ampliar banco de prompts → ejecutar Fase 3 → Fase 4 → Fase 5.
+- **Trabajo realizado:**
+  - Creación de `CLAUDE.md`, `AGENTE_CONTEXTO.md` y `ALGORITMO.md`
+  - Expansión de `phase1_prompts.py`: 48→108 maliciosos (+ categoría `extraccion_sistema`), 40→92 benignos. Total: **200 entradas exactas**
+  - Corrección O(n²)→O(1) en `phase3_dataset.py` (error [002])
+  - Mejora de heurística en `phase2_attack.py`: threshold evasión de >0 a ≥2 (patrón P1)
+  - Repositorio GitHub inicializado y pusheado: https://github.com/vivimahechagarcia05-spec/lenguaje-natural
+- **Estado al cierre:** Fases 1-2 completas y refactorizadas. Fases 3-5 pendientes de ejecución.
+- **Pendiente:** Ejecutar Fase 3 → Fase 4 → Fase 5 en orden.
 
 ---
 
