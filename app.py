@@ -39,6 +39,7 @@ from evasion import detect_evasion
 # ─────────────────────────────────────────────
 
 MODEL_FILE = "classifier_model.pkl"
+DATASET_FILE = "dataset.csv"
 ATTACK_FILE = "attack_results.csv"
 GROQ_MODEL = "llama-3.3-70b-versatile"
 
@@ -67,9 +68,27 @@ st.set_page_config(page_title="PromptShield — Ofensiva & Defensiva", page_icon
 
 @st.cache_resource
 def load_classifier():
-    if not os.path.exists(MODEL_FILE):
+    """
+    Carga el clasificador binario. Si no existe el .pkl (p.ej. en la nube,
+    porque está gitignored), lo ENTRENA al vuelo desde dataset.csv.
+    """
+    if os.path.exists(MODEL_FILE):
+        return joblib.load(MODEL_FILE)
+    # Fallback: entrenar desde el dataset versionado en el repo
+    if not os.path.exists(DATASET_FILE):
         return None
-    return joblib.load(MODEL_FILE)
+    df = pd.read_csv(DATASET_FILE)
+    X = df["prompt"].astype(str)
+    y = df["label"].astype(int)
+    pipe = Pipeline([
+        ("tfidf", TfidfVectorizer(
+            preprocessor=preprocess_for_tfidf,
+            ngram_range=(1, 2), max_features=5000, sublinear_tf=True,
+        )),
+        ("clf", MultinomialNB(alpha=0.1)),
+    ])
+    pipe.fit(X, y)
+    return pipe
 
 
 @st.cache_resource
@@ -163,7 +182,8 @@ st.title("🛡 PromptShield")
 st.caption("Ataque automatizado de Prompt Injection + Defensa con clasificador ML · OWASP LLM01 · UTP")
 
 if clf is None:
-    st.error("No se encontró `classifier_model.pkl`. Ejecuta `python phase4_classifier.py` primero.")
+    st.error("No se encontró `classifier_model.pkl` ni `dataset.csv`. "
+             "Ejecuta `python phase3_dataset.py` y `python phase4_classifier.py`.")
     st.stop()
 if not api_key:
     st.warning("⚠️ Sin `GROQ_API_KEY`. El clasificador funciona, pero no habrá respuestas del LLM.")
