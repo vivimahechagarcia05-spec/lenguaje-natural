@@ -18,6 +18,7 @@ import json
 from groq import Groq
 from dotenv import load_dotenv
 from phase1_prompts import get_all_malicious
+from security_utils import sanitize_for_csv
 
 # ─────────────────────────────────────────────
 # CONFIGURACIÓN
@@ -143,7 +144,8 @@ def run_attack():
                 max_tokens=512,
                 temperature=0.7,
             )
-            answer = response.choices[0].message.content.strip()
+            content = response.choices[0].message.content
+            answer = content.strip() if content else "[respuesta vacía del modelo]"
             evaded = detect_evasion(answer)
 
             status = "✅ EVASIÓN" if evaded else "🛡  BLOQUEADO"
@@ -183,7 +185,12 @@ def save_results(results: list):
     with open(OUTPUT_FILE, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=["prompt", "category", "label", "response", "evaded"])
         writer.writeheader()
-        writer.writerows(results)
+        # Sanitizar campos de texto contra CSV Injection (V3)
+        for row in results:
+            safe = dict(row)
+            safe["prompt"] = sanitize_for_csv(safe["prompt"])
+            safe["response"] = sanitize_for_csv(safe["response"])
+            writer.writerow(safe)
     print(f"\n✔ Resultados guardados en: {OUTPUT_FILE}")
 
 

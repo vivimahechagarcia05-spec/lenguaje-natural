@@ -172,6 +172,7 @@
     <a href="#ataques">Ataques</a>
     <a href="#resultados">Resultados</a>
     <a href="#defensa">Defensa</a>
+    <a href="#seguridad">Seguridad</a>
   </div>
 </nav>
 
@@ -188,10 +189,10 @@
 <!-- ── KPIs ── -->
 <section>
   <div class="stats">
-    <div class="stat"><div class="num cyan">200</div><div class="label">Prompts en el dataset</div></div>
+    <div class="stat"><div class="num cyan">240</div><div class="label">Prompts en el dataset</div></div>
     <div class="stat"><div class="num purple">7</div><div class="label">Categorías de ataque</div></div>
-    <div class="stat"><div class="num ok">100%</div><div class="label">F1-score (mejor modelo)</div></div>
-    <div class="stat"><div class="num ok">1.00</div><div class="label">AUC-ROC</div></div>
+    <div class="stat"><div class="num ok">93.8%</div><div class="label">F1-score (mejor modelo)</div></div>
+    <div class="stat"><div class="num ok">0.984</div><div class="label">AUC-ROC</div></div>
   </div>
 </section>
 
@@ -222,9 +223,9 @@
   <h2 class="section-title">5 fases, de ofensiva a defensa</h2>
   <p class="section-sub">El proyecto recorre el ciclo completo: reconocer, atacar, recolectar datos, entrenar la defensa y evaluarla.</p>
   <div class="pipeline">
-    <div class="phase"><div class="pn">FASE 1</div><h4>Reconocimiento</h4><p>Banco de 108 prompts maliciosos + 92 benignos según OWASP.</p></div>
+    <div class="phase"><div class="pn">FASE 1</div><h4>Reconocimiento</h4><p>Banco de 108 prompts maliciosos + 132 benignos según OWASP.</p></div>
     <div class="phase"><div class="pn">FASE 2</div><h4>Ataque</h4><p>Fuzzing automatizado contra LLaMA 3.3 70B en Groq.</p></div>
-    <div class="phase"><div class="pn">FASE 3</div><h4>Dataset</h4><p>200 entradas etiquetadas (malicioso=1 / benigno=0).</p></div>
+    <div class="phase"><div class="pn">FASE 3</div><h4>Dataset</h4><p>240 entradas etiquetadas (malicioso=1 / benigno=0).</p></div>
     <div class="phase"><div class="pn">FASE 4</div><h4>Defensa</h4><p>TF-IDF + Naive Bayes / Regresión Logística.</p></div>
     <div class="phase"><div class="pn">FASE 5</div><h4>Evaluación</h4><p>Pipeline defensivo + métricas ROC, PR, F1.</p></div>
   </div>
@@ -233,7 +234,10 @@
 <span class="accent">Input del usuario</span>
        │
        ▼
-  <span class="accent">[ Clasificador ML ]</span>  ← TF-IDF + Regresión Logística
+  <span class="ok">[ Normalización Unicode ]</span>  ← neutraliza ofuscación
+       │
+       ▼
+  <span class="accent">[ Clasificador ML ]</span>  ← TF-IDF + Naive Bayes
        │
    ¿malicioso?
     ╱        ╲
@@ -267,21 +271,21 @@
 <section id="resultados">
   <div class="kicker">Resultados</div>
   <h2 class="section-title">El clasificador supera la meta del 85%</h2>
-  <p class="section-sub">Se entrenaron y compararon dos modelos. La Regresión Logística obtuvo desempeño perfecto en el conjunto de prueba.</p>
+  <p class="section-sub">Dos modelos entrenados sobre 240 prompts. Métricas medidas sobre un conjunto de prueba retenido (held-out).</p>
 
   <div class="table-wrap" style="margin-bottom:2rem;">
     <table>
       <thead><tr><th>Modelo</th><th>Accuracy</th><th>F1-score</th><th>CV F1 (5-fold)</th><th>Estado</th></tr></thead>
       <tbody>
-        <tr><td class="mono">Regresión Logística</td><td>100%</td><td>1.000</td><td>0.975 ± 0.023</td><td><span class="pill best">★ Mejor modelo</span></td></tr>
-        <tr><td class="mono">Naive Bayes</td><td>97.5%</td><td>0.975</td><td>0.969 ± 0.020</td><td><span class="pill ok">Supera meta</span></td></tr>
+        <tr><td class="mono">Naive Bayes</td><td>93.8%</td><td>0.938</td><td>0.958 ± 0.022</td><td><span class="pill best">★ Mejor modelo</span></td></tr>
+        <tr><td class="mono">Regresión Logística</td><td>93.8%</td><td>0.937</td><td>0.931 ± 0.028</td><td><span class="pill ok">Supera meta</span></td></tr>
       </tbody>
     </table>
   </div>
 
   <div class="plot-grid">
     <div class="plot"><img src="assets/model_comparison.png" alt="Comparación de modelos"><div class="plot-cap">Comparación de modelos — Accuracy, F1 y CV F1 vs. meta del 85%</div></div>
-    <div class="plot"><img src="assets/phase5_roc_pr.png" alt="Curvas ROC y Precision-Recall"><div class="plot-cap">Curva ROC (AUC = 1.00) y Precision-Recall</div></div>
+    <div class="plot"><img src="assets/phase5_roc_pr.png" alt="Curvas ROC y Precision-Recall"><div class="plot-cap">Curva ROC (AUC = 0.984) y Precision-Recall</div></div>
     <div class="plot"><img src="assets/confusion_logistic.png" alt="Matriz de confusión Regresión Logística"><div class="plot-cap">Matriz de confusión — Regresión Logística</div></div>
     <div class="plot"><img src="assets/confusion_naive_bayes.png" alt="Matriz de confusión Naive Bayes"><div class="plot-cap">Matriz de confusión — Naive Bayes</div></div>
   </div>
@@ -296,6 +300,28 @@
     <div class="plot"><img src="assets/before_after_defense.png" alt="Impacto de la defensa"><div class="plot-cap">Comparativa: prompts que alcanzan el modelo sin vs. con defensa</div></div>
     <div class="plot"><img src="assets/phase5_confusion.png" alt="Matriz de confusión del pipeline"><div class="plot-cap">Matriz de confusión del pipeline defensivo completo</div></div>
   </div>
+</section>
+
+<!-- ── Seguridad ── -->
+<section id="seguridad">
+  <div class="kicker">Auditoría de seguridad · Red-team</div>
+  <h2 class="section-title">Lo que rompimos (y arreglamos)</h2>
+  <p class="section-sub">El propio sistema fue sometido a un red-team. La grieta más grave: el clasificador inicial bloqueaba el <strong>53% de los prompts benignos cotidianos</strong>. El "100% F1" original era engañoso — se medía sobre el mismo vocabulario de entrenamiento.</p>
+
+  <div class="stats" style="margin-bottom:2rem;">
+    <div class="stat"><div class="num danger" style="color:var(--danger)">53%→7%</div><div class="label">Falsos positivos reducidos</div></div>
+    <div class="stat"><div class="num cyan">10</div><div class="label">Grietas identificadas</div></div>
+    <div class="stat"><div class="num ok">✓</div><div class="label">Ofuscación Unicode neutralizada</div></div>
+  </div>
+
+  <div class="grid cols-2">
+    <div class="card"><h3>🩹 V1 · Falsos positivos masivos</h3><p>El conjunto benigno solo tenía preguntas de ciberseguridad. Se añadió texto cotidiano: los FP cayeron de 53% a 7%.</p></div>
+    <div class="card"><h3>🔑 V2 · Token filtrado</h3><p>Un token de GitHub quedó embebido en el repo. Eliminado del historial de configuración.</p></div>
+    <div class="card"><h3>📑 V3 · CSV Injection</h3><p>Prompts con <code>=</code>, <code>+</code>, <code>@</code> podían ejecutar fórmulas en Excel. Ahora se sanitizan.</p></div>
+    <div class="card"><h3>🌐 V7 · Ofuscación Unicode</h3><p>Ataques con caracteres fullwidth y de ancho cero evadían el filtro. Se normaliza el input (NFKC) antes de clasificar.</p></div>
+  </div>
+
+  <p class="section-sub" style="margin-top:2rem;">⚠️ <strong>Prototipo académico, no defensa de producción.</strong> Dataset pequeño (240), TF-IDF sin semántica y defensa monocapa. Reporte completo en <a href="https://github.com/vivimahechagarcia05-spec/lenguaje-natural/blob/main/SECURITY.md" target="_blank" style="color:var(--accent)">SECURITY.md</a>.</p>
 </section>
 
 <footer>

@@ -83,6 +83,13 @@ Si se ejecuta cualquier fase que use Groq sin el archivo `.env`, el script lanza
 
 ---
 
+### Sesión 2026-06-04 (continuación) — Auditoría de seguridad
+- **Trabajo:** Red-team completo del proyecto. Ver [SECURITY.md](SECURITY.md) con 10 grietas.
+- **Hallazgo crítico (V1):** El clasificador bloqueaba 53% de prompts benignos cotidianos. El "100% F1" era engañoso (evaluación sobre el mismo vocabulario de entrenamiento). Solución: 40 prompts benignos genéricos añadidos → FP 53%→7%, F1 honesto 93.8%.
+- **Fixes aplicados:** `security_utils.py` (normalize_input NFKC anti-ofuscación, sanitize_for_csv anti CSV-injection, validate_input). Integrado en Fases 2, 3, 4 (preprocessor TF-IDF), 5. Token eliminado del remote. Manejo de None en respuestas Groq.
+- **Lección clave:** NUNCA confiar en métricas perfectas sobre datasets pequeños y mono-dominio. Siempre probar con inputs fuera de distribución (out-of-distribution) antes de declarar éxito.
+- **Pendiente usuario:** revocar token ghp_91RA..., considerar fijar versiones en requirements.txt.
+
 ## Checklist Antes de Cada Sesión
 
 - [ ] Leer las entradas de error relevantes a la fase en que se va a trabajar

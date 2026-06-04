@@ -29,6 +29,7 @@ from sklearn.metrics import (
     accuracy_score,
     f1_score,
 )
+from security_utils import preprocess_for_tfidf
 
 DATASET_FILE = "dataset.csv"
 MODEL_OUTPUT  = "classifier_model.pkl"
@@ -61,6 +62,7 @@ def build_pipelines():
     return {
         "Naive Bayes": Pipeline([
             ("tfidf", TfidfVectorizer(
+                preprocessor=preprocess_for_tfidf,  # normaliza ofuscación Unicode
                 ngram_range=(1, 2),
                 max_features=5000,
                 sublinear_tf=True,
@@ -69,6 +71,7 @@ def build_pipelines():
         ]),
         "Regresión Logística": Pipeline([
             ("tfidf", TfidfVectorizer(
+                preprocessor=preprocess_for_tfidf,  # normaliza ofuscación Unicode
                 ngram_range=(1, 2),
                 max_features=5000,
                 sublinear_tf=True,

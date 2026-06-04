@@ -16,6 +16,7 @@ import os
 import csv
 import pandas as pd
 from phase1_prompts import get_all_malicious, get_all_benign
+from security_utils import sanitize_for_csv
 
 ATTACK_RESULTS_FILE = "attack_results.csv"
 OUTPUT_FILE = "dataset.csv"
@@ -78,7 +79,10 @@ def build_dataset():
     # 4. Guardar
     df = pd.DataFrame(all_entries)
     df = df.drop_duplicates(subset=["prompt"]).reset_index(drop=True)
-    df.to_csv(OUTPUT_FILE, index=False, encoding="utf-8")
+    # Sanitizar la columna de texto contra CSV Injection (V3) antes de exportar
+    df_export = df.copy()
+    df_export["prompt"] = df_export["prompt"].apply(sanitize_for_csv)
+    df_export.to_csv(OUTPUT_FILE, index=False, encoding="utf-8")
 
     # 5. Reporte
     total = len(df)

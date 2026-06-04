@@ -46,6 +46,7 @@ from sklearn.metrics import (
     precision_recall_curve,
 )
 from sklearn.model_selection import train_test_split
+from security_utils import normalize_input, validate_input
 
 DATASET_FILE  = "dataset.csv"
 MODEL_FILE    = "classifier_model.pkl"
@@ -71,6 +72,12 @@ class DefensivePipeline:
     )
 
     def __init__(self, model_path: str, groq_api_key: str):
+        # ADVERTENCIA DE SEGURIDAD (V4): joblib.load deserializa pickle, lo cual
+        # permite ejecución de código arbitrario si el archivo fue manipulado.
+        # Cargar SOLO modelos generados localmente por phase4_classifier.py.
+        # Nunca cargar un .pkl recibido de fuentes no confiables.
+        if not os.path.exists(model_path):
+            raise FileNotFoundError(f"Modelo no encontrado: {model_path}")
         self.classifier = joblib.load(model_path)
         self.client = Groq(api_key=groq_api_key)
         self.model = "llama-3.3-70b-versatile"
@@ -95,6 +102,16 @@ class DefensivePipeline:
           - Si es malicioso → bloquea y retorna mensaje de rechazo
           - Si es benigno   → envía a Groq y retorna respuesta
         """
+        # Validación y normalización defensiva del input (V5, V7)
+        is_valid, msg = validate_input(user_input)
+        if not is_valid:
+            return {
+                "blocked": True,
+                "classification": {"label": 1, "confidence": None},
+                "response": f"⛔ Input rechazado: {msg}",
+            }
+        user_input = normalize_input(user_input)
+
         classification = self.classify(user_input)
 
         if classification["label"] == 1:
@@ -116,7 +133,8 @@ class DefensivePipeline:
                     max_tokens=256,
                     temperature=0.5,
                 )
-                answer = resp.choices[0].message.content.strip()
+                content = resp.choices[0].message.content
+                answer = content.strip() if content else "[respuesta vacía del modelo]"
             except Exception as e:
                 answer = f"[Error al consultar el modelo: {e}]"
 
